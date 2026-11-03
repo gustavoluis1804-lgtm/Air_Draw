@@ -147,7 +147,9 @@ function readBoardCodeFromUrl() {
   return new URLSearchParams(window.location.search).get("code");
 }
 
-function parseRemotePayload(raw: string): { type: "strokes"; strokes: Stroke[] } | null {
+function parseRemotePayload(
+  raw: string,
+): { type: "strokes"; strokes: Stroke[] } | null {
   try {
     const data = JSON.parse(raw) as { type?: string; strokes?: Stroke[] };
     if (data.type === "strokes" && Array.isArray(data.strokes)) {
@@ -159,7 +161,11 @@ function parseRemotePayload(raw: string): { type: "strokes"; strokes: Stroke[] }
   return null;
 }
 
-const StatusPill = memo(function StatusPill({ status }: { status: CameraStatus }) {
+const StatusPill = memo(function StatusPill({
+  status,
+}: {
+  status: CameraStatus;
+}) {
   const tone =
     status === "on"
       ? "border-success/40 text-success"
@@ -188,7 +194,13 @@ const StatusPill = memo(function StatusPill({ status }: { status: CameraStatus }
   );
 });
 
-const Card = memo(function Card({ title, children }: { title: string; children: ReactNode }) {
+const Card = memo(function Card({
+  title,
+  children,
+}: {
+  title: string;
+  children: ReactNode;
+}) {
   return (
     <section className="rounded-2xl border border-border bg-panel p-4">
       <h2 className="eyebrow mb-3">{title}</h2>
@@ -197,7 +209,13 @@ const Card = memo(function Card({ title, children }: { title: string; children: 
   );
 });
 
-const Row = memo(function Row({ label, value }: { label: string; value: string }) {
+const Row = memo(function Row({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
   return (
     <div className="flex items-center justify-between gap-2 border-b border-border py-2 text-xs last:border-0">
       <span className="text-muted-foreground">{label}</span>
@@ -259,7 +277,10 @@ export function AirDraw() {
   const [gallery, setGallery] = useState<GalleryEntry[]>(() => loadGallery());
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
-  const [gestures, setGestures] = useState<[Gesture, Gesture]>(["none", "none"]);
+  const [gestures, setGestures] = useState<[Gesture, Gesture]>([
+    "none",
+    "none",
+  ]);
   const gesture = gestures[0];
   const [proximity, setProximity] = useState<number | null>(null);
   const [suggestion, setSuggestion] = useState<ShapeKind | null>(null);
@@ -281,7 +302,10 @@ export function AirDraw() {
   const [introDismissed, setIntroDismissed] = useState(false);
   const [mobileBoardMode, setMobileBoardMode] = useState(() => {
     if (typeof window === "undefined") return false;
-    return new URLSearchParams(window.location.search).get(BOARD_MODE_PARAM) === "phone";
+    return (
+      new URLSearchParams(window.location.search).get(BOARD_MODE_PARAM) ===
+      "phone"
+    );
   });
   const [remoteState, setRemoteState] = useState<RemoteState>({
     role: null,
@@ -289,9 +313,9 @@ export function AirDraw() {
     status: "disconnected",
   });
   const [remoteError, setRemoteError] = useState<string | null>(null);
-  const [mobileBoardCodeInput, setMobileBoardCodeInput] = useState<
-    string
-  >(() => readBoardCodeFromUrl() ?? "");
+  const [mobileBoardCodeInput, setMobileBoardCodeInput] = useState<string>(
+    () => readBoardCodeFromUrl() ?? "",
+  );
 
   const stageRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -354,7 +378,10 @@ export function AirDraw() {
   }, []);
 
   const shareCanvasState = useCallback(() => {
-    const payload = JSON.stringify({ type: "strokes", strokes: engine.strokes });
+    const payload = JSON.stringify({
+      type: "strokes",
+      strokes: engine.strokes,
+    });
     if (typeof window === "undefined" || remoteSyncLockRef.current) return;
 
     const connection = remoteConnectionRef.current;
@@ -388,7 +415,10 @@ export function AirDraw() {
           setRemoteError(null);
           const link = makeBoardLink(nextCode);
           navigator.clipboard?.writeText(link).catch(() => {});
-          const payload = JSON.stringify({ type: "strokes", strokes: engine.strokes });
+          const payload = JSON.stringify({
+            type: "strokes",
+            strokes: engine.strokes,
+          });
           localStorage.setItem(BOARD_SESSION_PREFIX + nextCode, payload);
         });
 
@@ -400,7 +430,9 @@ export function AirDraw() {
                 ? { ...prev, status: "connected" }
                 : { role: "host", code: nextCode, status: "connected" },
             );
-            connection.send(JSON.stringify({ type: "strokes", strokes: engine.strokes }));
+            connection.send(
+              JSON.stringify({ type: "strokes", strokes: engine.strokes }),
+            );
           });
 
           connection.on("data", (value) => {
@@ -422,7 +454,8 @@ export function AirDraw() {
         });
 
         peer.on("error", (error) => {
-          const message = error instanceof Error ? error.message : String(error);
+          const message =
+            error instanceof Error ? error.message : String(error);
           setRemoteError(`Erro na lousa: ${message}`);
           setRemoteState({ role: null, code: "", status: "disconnected" });
         });
@@ -436,7 +469,9 @@ export function AirDraw() {
         return;
       }
 
-      const existingPayload = localStorage.getItem(BOARD_SESSION_PREFIX + boardCode);
+      const existingPayload = localStorage.getItem(
+        BOARD_SESSION_PREFIX + boardCode,
+      );
       if (existingPayload) {
         const parsed = parseRemotePayload(existingPayload);
         if (parsed) {
@@ -457,14 +492,24 @@ export function AirDraw() {
       peerRef.current = peer;
 
       peer.on("open", () => {
-        setRemoteState({ role: "client", code: boardCode, status: "connecting" });
+        setRemoteState({
+          role: "client",
+          code: boardCode,
+          status: "connecting",
+        });
         const connection = peer.connect(boardCode, { reliable: true });
         remoteConnectionRef.current = connection;
 
         connection.on("open", () => {
-          setRemoteState({ role: "client", code: boardCode, status: "connected" });
+          setRemoteState({
+            role: "client",
+            code: boardCode,
+            status: "connected",
+          });
           setRemoteError(null);
-          connection.send(JSON.stringify({ type: "strokes", strokes: engine.strokes }));
+          connection.send(
+            JSON.stringify({ type: "strokes", strokes: engine.strokes }),
+          );
         });
 
         connection.on("data", (value) => {
@@ -488,7 +533,9 @@ export function AirDraw() {
 
       peer.on("error", (error) => {
         const message = error instanceof Error ? error.message : String(error);
-        setRemoteError(`Não foi possível conectar ao código ${boardCode}: ${message}`);
+        setRemoteError(
+          `Não foi possível conectar ao código ${boardCode}: ${message}`,
+        );
         setRemoteState({ role: null, code: "", status: "disconnected" });
       });
 
@@ -782,7 +829,8 @@ export function AirDraw() {
         if (k !== undefined && k >= 0) bySlot[k] = h.landmarks;
       });
       const in3D = show3DRef.current;
-      const overlay: { points: { x: number; y: number }[]; color: string }[] = [];
+      const overlay: { points: { x: number; y: number }[]; color: string }[] =
+        [];
       let gesturesChanged = false;
 
       slots.forEach((slot, i) => {
@@ -1344,7 +1392,6 @@ export function AirDraw() {
         </div>
       </Card>
 
-
       <Card title="3D">
         <Button
           variant="panel"
@@ -1388,7 +1435,11 @@ export function AirDraw() {
                 <Button
                   variant="panel"
                   size="sm"
-                  onClick={() => navigator.clipboard?.writeText(makeBoardLink(remoteState.code)).catch(() => {})}
+                  onClick={() =>
+                    navigator.clipboard
+                      ?.writeText(makeBoardLink(remoteState.code))
+                      .catch(() => {})
+                  }
                 >
                   Copiar
                 </Button>
@@ -1405,7 +1456,10 @@ export function AirDraw() {
                 value={mobileBoardCodeInput}
                 onChange={(e) =>
                   setMobileBoardCodeInput(
-                    e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6),
+                    e.target.value
+                      .toUpperCase()
+                      .replace(/[^A-Z0-9]/g, "")
+                      .slice(0, 6),
                   )
                 }
                 placeholder="EX: AB12CD"
@@ -1415,7 +1469,12 @@ export function AirDraw() {
               />
               <Button
                 variant="panel"
-                onClick={() => void connectRemote("client", mobileBoardCodeInput || undefined)}
+                onClick={() =>
+                  void connectRemote(
+                    "client",
+                    mobileBoardCodeInput || undefined,
+                  )
+                }
               >
                 Entrar
               </Button>
@@ -1431,16 +1490,23 @@ export function AirDraw() {
               Criar código
             </Button>
             {remoteState.role && (
-              <Button variant="ghost" className="flex-1" onClick={disconnectRemote}>
+              <Button
+                variant="ghost"
+                className="flex-1"
+                onClick={disconnectRemote}
+              >
                 Encerrar
               </Button>
             )}
           </div>
 
           <p className="text-xs text-muted-foreground">
-            Abra o link gerado no celular ou use o código acima para conectar a lousa.
+            Abra o link gerado no celular ou use o código acima para conectar a
+            lousa.
           </p>
-          {remoteError && <p className="text-xs text-destructive">{remoteError}</p>}
+          {remoteError && (
+            <p className="text-xs text-destructive">{remoteError}</p>
+          )}
         </div>
       </Card>
 

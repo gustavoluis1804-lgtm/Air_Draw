@@ -73,11 +73,36 @@ type Props = {
 const UNIT = 200;
 const CAMERA_HOME = new THREE.Vector3(0, 35, 330);
 
-const MODES: Array<{ id: GeometryMode; label: string; icon: string; desc: string }> = [
-  { id: "inflate", label: "Inflado 3D", icon: "🎈", desc: "Volume orgânico suave em domo 360°" },
-  { id: "lathe", label: "Torno / Revolução", icon: "🔄", desc: "Sólido oco com espessura para taças e vasos" },
-  { id: "extrude", label: "Extrusão Sólida", icon: "📦", desc: "Sólido com chanfros para espadas e símbolos" },
-  { id: "tubes", label: "Tubos Dinâmicos", icon: "〰️", desc: "Tubos com espessura variável e brilho neon" },
+const MODES: Array<{
+  id: GeometryMode;
+  label: string;
+  icon: string;
+  desc: string;
+}> = [
+  {
+    id: "inflate",
+    label: "Inflado 3D",
+    icon: "🎈",
+    desc: "Volume orgânico suave em domo 360°",
+  },
+  {
+    id: "lathe",
+    label: "Torno / Revolução",
+    icon: "🔄",
+    desc: "Sólido oco com espessura para taças e vasos",
+  },
+  {
+    id: "extrude",
+    label: "Extrusão Sólida",
+    icon: "📦",
+    desc: "Sólido com chanfros para espadas e símbolos",
+  },
+  {
+    id: "tubes",
+    label: "Tubos Dinâmicos",
+    icon: "〰️",
+    desc: "Tubos com espessura variável e brilho neon",
+  },
 ];
 
 const MATERIALS: Array<{ id: MaterialVariant; label: string; dot: string }> = [
@@ -254,7 +279,11 @@ function createPbrMaterial(
 }
 
 type SceneApi = {
-  rebuild: (depth: number, mode?: GeometryMode, material?: MaterialVariant) => void;
+  rebuild: (
+    depth: number,
+    mode?: GeometryMode,
+    material?: MaterialVariant,
+  ) => void;
   reset: () => void;
   setView: (view: "perspective" | "front" | "top" | "side") => void;
   setAutoRotate: (on: boolean) => void;
@@ -293,7 +322,11 @@ export default function Scene3D({
   useEffect(() => {
     if (!container) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -331,8 +364,12 @@ export default function Scene3D({
     };
     controls.addEventListener("start", stopAuto);
 
-    const lightA = new THREE.Color(cssColorToHex(readCssVar("--scene-light-a") || "#55e7ff"));
-    const lightB = new THREE.Color(cssColorToHex(readCssVar("--scene-light-b") || "#ff6687"));
+    const lightA = new THREE.Color(
+      cssColorToHex(readCssVar("--scene-light-a") || "#55e7ff"),
+    );
+    const lightB = new THREE.Color(
+      cssColorToHex(readCssVar("--scene-light-b") || "#ff6687"),
+    );
 
     scene.add(new THREE.HemisphereLight(0xffffff, lightB, 0.7));
 
@@ -357,7 +394,9 @@ export default function Scene3D({
     const grid = new THREE.GridHelper(
       600,
       30,
-      new THREE.Color(cssColorToHex(readCssVar("--scene-grid-center") || "#3a4560")),
+      new THREE.Color(
+        cssColorToHex(readCssVar("--scene-grid-center") || "#3a4560"),
+      ),
       new THREE.Color(cssColorToHex(readCssVar("--scene-grid") || "#252d40")),
     );
     const gridMat = grid.material as THREE.Material;
@@ -401,7 +440,10 @@ export default function Scene3D({
     const modelGroup = new THREE.Group();
     scene.add(modelGroup);
 
-    const home = { center: new THREE.Vector3(), distance: CAMERA_HOME.length() };
+    const home = {
+      center: new THREE.Vector3(),
+      distance: CAMERA_HOME.length(),
+    };
 
     const disposeGroup = (grp: THREE.Group) => {
       for (const child of [...grp.children]) {
@@ -409,14 +451,19 @@ export default function Scene3D({
         child.traverse((o) => {
           const mesh = o as THREE.Mesh;
           mesh.geometry?.dispose();
-          const m = mesh.material as THREE.Material | THREE.Material[] | undefined;
+          const m = mesh.material as
+            THREE.Material | THREE.Material[] | undefined;
           if (Array.isArray(m)) m.forEach((x) => x.dispose());
           else m?.dispose();
         });
       }
     };
 
-    const rebuild = (depthFactor: number, nextMode = modeRef.current, nextMaterial = materialRef.current) => {
+    const rebuild = (
+      depthFactor: number,
+      nextMode = modeRef.current,
+      nextMaterial = materialRef.current,
+    ) => {
       disposeGroup(modelGroup);
       disposeGroup(pedestalGroup);
 
@@ -429,7 +476,11 @@ export default function Scene3D({
       const inflationFactor = inflation;
       const isWire = wireframeRef.current;
 
-      modelGroup.rotation.set((rotationX * Math.PI) / 180, (rotationY * Math.PI) / 180, 0);
+      modelGroup.rotation.set(
+        (rotationX * Math.PI) / 180,
+        (rotationY * Math.PI) / 180,
+        0,
+      );
 
       // 1. Calculate overall drawing bounds
       let minX = Infinity;
@@ -458,14 +509,12 @@ export default function Scene3D({
         const maxYWorld = -(minY - 0.5) * UNIT;
         const heightRange = Math.max(1, maxYWorld - minYWorld);
 
-        const bins: Array<{ sumR: number; count: number; y: number }> = Array.from(
-          { length: slices },
-          (_, k) => ({
+        const bins: Array<{ sumR: number; count: number; y: number }> =
+          Array.from({ length: slices }, (_, k) => ({
             sumR: 0,
             count: 0,
             y: minYWorld + (k / (slices - 1)) * heightRange,
-          }),
-        );
+          }));
 
         strokes.forEach((s) => {
           s.points.forEach((p) => {
@@ -473,7 +522,10 @@ export default function Scene3D({
             const y = -(p.y - 0.5) * UNIT;
             const idx = Math.min(
               slices - 1,
-              Math.max(0, Math.floor(((y - minYWorld) / heightRange) * (slices - 1))),
+              Math.max(
+                0,
+                Math.floor(((y - minYWorld) / heightRange) * (slices - 1)),
+              ),
             );
             bins[idx]!.sumR += r;
             bins[idx]!.count++;
@@ -501,20 +553,41 @@ export default function Scene3D({
 
         // Top rim rounded lip
         const topOuter = outerProfile[outerProfile.length - 1]!;
-        fullProfile.push(new THREE.Vector2(Math.max(2, topOuter.x - wallThickness * 0.5), topOuter.y + 1));
+        fullProfile.push(
+          new THREE.Vector2(
+            Math.max(2, topOuter.x - wallThickness * 0.5),
+            topOuter.y + 1,
+          ),
+        );
 
         // Inner wall going DOWN
         for (let k = outerProfile.length - 1; k >= 0; k--) {
           const pt = outerProfile[k]!;
           const innerR = Math.max(1.5, pt.x - wallThickness);
-          fullProfile.push(new THREE.Vector2(innerR, pt.y + (k === 0 ? wallThickness * 0.8 : 0)));
+          fullProfile.push(
+            new THREE.Vector2(
+              innerR,
+              pt.y + (k === 0 ? wallThickness * 0.8 : 0),
+            ),
+          );
         }
 
         // Inner bottom center closure
-        fullProfile.push(new THREE.Vector2(0, outerProfile[0]!.y + wallThickness * 0.8));
+        fullProfile.push(
+          new THREE.Vector2(0, outerProfile[0]!.y + wallThickness * 0.8),
+        );
 
-        const latheMat = createPbrMaterial(materialVariant, primaryColor, isWire);
-        const latheGeo = new THREE.LatheGeometry(fullProfile, 52, 0, Math.PI * 2);
+        const latheMat = createPbrMaterial(
+          materialVariant,
+          primaryColor,
+          isWire,
+        );
+        const latheGeo = new THREE.LatheGeometry(
+          fullProfile,
+          52,
+          0,
+          Math.PI * 2,
+        );
         latheGeo.computeVertexNormals();
         const latheMesh = new THREE.Mesh(latheGeo, latheMat);
         latheMesh.castShadow = true;
@@ -526,7 +599,11 @@ export default function Scene3D({
         strokes.forEach((s) => {
           if (s.points.length < 2) return;
           const pts: THREE.Vector3[] = [];
-          for (let j = 0; j < s.points.length; j += Math.max(1, Math.floor(s.points.length / 120))) {
+          for (
+            let j = 0;
+            j < s.points.length;
+            j += Math.max(1, Math.floor(s.points.length / 120))
+          ) {
             const p = s.points[j]!;
             pts.push(
               new THREE.Vector3(
@@ -537,8 +614,18 @@ export default function Scene3D({
             );
           }
           const curve = new THREE.CatmullRomCurve3(pts, false, "centripetal");
-          const tubeGeo = new THREE.TubeGeometry(curve, pts.length * 2, 1.2, 8, false);
-          const tubeMat = createPbrMaterial("neon", new THREE.Color(s.color), isWire);
+          const tubeGeo = new THREE.TubeGeometry(
+            curve,
+            pts.length * 2,
+            1.2,
+            8,
+            false,
+          );
+          const tubeMat = createPbrMaterial(
+            "neon",
+            new THREE.Color(s.color),
+            isWire,
+          );
           const tubeMesh = new THREE.Mesh(tubeGeo, tubeMat);
           tubeMesh.castShadow = true;
           modelGroup.add(tubeMesh);
@@ -550,11 +637,15 @@ export default function Scene3D({
           if (s.points.length < 3) return;
           const first = s.points[0]!;
           const last = s.points[s.points.length - 1]!;
-          const isClosed = Math.hypot((first.x - last.x) * aspect, first.y - last.y) < 0.18;
+          const isClosed =
+            Math.hypot((first.x - last.x) * aspect, first.y - last.y) < 0.18;
 
           if (isClosed) {
             const shape = new THREE.Shape();
-            shape.moveTo((first.x - 0.5) * aspect * UNIT, -(first.y - 0.5) * UNIT);
+            shape.moveTo(
+              (first.x - 0.5) * aspect * UNIT,
+              -(first.y - 0.5) * UNIT,
+            );
             for (let j = 1; j < s.points.length; j++) {
               const p = s.points[j]!;
               shape.lineTo((p.x - 0.5) * aspect * UNIT, -(p.y - 0.5) * UNIT);
@@ -569,7 +660,11 @@ export default function Scene3D({
               bevelSegments: 4,
             });
             extrudeGeo.center();
-            const mat = createPbrMaterial(materialVariant, new THREE.Color(s.color), isWire);
+            const mat = createPbrMaterial(
+              materialVariant,
+              new THREE.Color(s.color),
+              isWire,
+            );
             const mesh = new THREE.Mesh(extrudeGeo, mat);
             mesh.castShadow = true;
             mesh.receiveShadow = true;
@@ -578,17 +673,44 @@ export default function Scene3D({
           } else {
             // Open stroke: volumetric extruded beam
             const pts: THREE.Vector3[] = [];
-            for (let j = 0; j < s.points.length; j += Math.max(1, Math.floor(s.points.length / 160))) {
+            for (
+              let j = 0;
+              j < s.points.length;
+              j += Math.max(1, Math.floor(s.points.length / 160))
+            ) {
               const p = s.points[j]!;
-              pts.push(new THREE.Vector3((p.x - 0.5) * aspect * UNIT, -(p.y - 0.5) * UNIT, 0));
+              pts.push(
+                new THREE.Vector3(
+                  (p.x - 0.5) * aspect * UNIT,
+                  -(p.y - 0.5) * UNIT,
+                  0,
+                ),
+              );
             }
-            const radius = Math.max(1.4, ((s.size / 2) * UNIT) / Math.max(stageHeight, 1));
-            const mat = createPbrMaterial(materialVariant, new THREE.Color(s.color), isWire);
+            const radius = Math.max(
+              1.4,
+              ((s.size / 2) * UNIT) / Math.max(stageHeight, 1),
+            );
+            const mat = createPbrMaterial(
+              materialVariant,
+              new THREE.Color(s.color),
+              isWire,
+            );
 
             [-14 * depthFactor, 14 * depthFactor].forEach((zOff) => {
               const shifted = pts.map((v) => new THREE.Vector3(v.x, v.y, zOff));
-              const curve = new THREE.CatmullRomCurve3(shifted, false, "centripetal");
-              const tube = new THREE.TubeGeometry(curve, shifted.length * 2, radius, 12, false);
+              const curve = new THREE.CatmullRomCurve3(
+                shifted,
+                false,
+                "centripetal",
+              );
+              const tube = new THREE.TubeGeometry(
+                curve,
+                shifted.length * 2,
+                radius,
+                12,
+                false,
+              );
               const m = new THREE.Mesh(tube, mat);
               m.castShadow = true;
               modelGroup.add(m);
@@ -609,7 +731,8 @@ export default function Scene3D({
 
           for (let j = 0; j < s.points.length; j += step) {
             const p = s.points[j]!;
-            const dist = Math.hypot((p.x - centerX) / spanX, (p.y - centerY) / spanY) * 2;
+            const dist =
+              Math.hypot((p.x - centerX) / spanX, (p.y - centerY) / spanY) * 2;
             const bulge =
               nextMode === "inflate"
                 ? Math.sqrt(Math.max(0, 1.2 - Math.min(1.2, dist * dist))) *
@@ -619,24 +742,40 @@ export default function Scene3D({
                 : 0;
 
             const t = j / Math.max(1, s.points.length - 1);
-            const arch = mode === "inflate" ? Math.sin(t * Math.PI) * 18 * depthFactor : 0;
+            const arch =
+              mode === "inflate" ? Math.sin(t * Math.PI) * 18 * depthFactor : 0;
             const handZ = clamp(-(p.z - meanZ) * 800, -60, 60) * depthFactor;
 
             const zF = layer + bulge + arch + handZ;
             const zB = layer - (bulge + arch) - handZ;
 
             vecsFront.push(
-              new THREE.Vector3((p.x - 0.5) * aspect * UNIT, -(p.y - 0.5) * UNIT, zF),
+              new THREE.Vector3(
+                (p.x - 0.5) * aspect * UNIT,
+                -(p.y - 0.5) * UNIT,
+                zF,
+              ),
             );
             if (mode === "inflate") {
               vecsBack.push(
-                new THREE.Vector3((p.x - 0.5) * aspect * UNIT, -(p.y - 0.5) * UNIT, zB),
+                new THREE.Vector3(
+                  (p.x - 0.5) * aspect * UNIT,
+                  -(p.y - 0.5) * UNIT,
+                  zB,
+                ),
               );
             }
           }
 
-          const baseRadius = Math.max(1.0, ((s.size / 2) * UNIT) / Math.max(stageHeight, 1));
-          const mat = createPbrMaterial(materialVariant, new THREE.Color(s.color), isWire);
+          const baseRadius = Math.max(
+            1.0,
+            ((s.size / 2) * UNIT) / Math.max(stageHeight, 1),
+          );
+          const mat = createPbrMaterial(
+            materialVariant,
+            new THREE.Color(s.color),
+            isWire,
+          );
 
           const strokeGroup = new THREE.Group();
           strokeGroup.name = `stroke-${i + 1}`;
@@ -651,7 +790,11 @@ export default function Scene3D({
             dot.position.copy(vecsFront[0] ?? new THREE.Vector3());
             strokeGroup.add(dot);
           } else {
-            const curveF = new THREE.CatmullRomCurve3(vecsFront, false, "centripetal");
+            const curveF = new THREE.CatmullRomCurve3(
+              vecsFront,
+              false,
+              "centripetal",
+            );
             const tubeF = new THREE.TubeGeometry(
               curveF,
               Math.min(700, vecsFront.length * 3),
@@ -664,8 +807,14 @@ export default function Scene3D({
             meshF.receiveShadow = true;
             strokeGroup.add(meshF);
 
-            for (const end of [vecsFront[0]!, vecsFront[vecsFront.length - 1]!]) {
-              const cap = new THREE.Mesh(new THREE.SphereGeometry(baseRadius * 1.2, 16, 12), mat);
+            for (const end of [
+              vecsFront[0]!,
+              vecsFront[vecsFront.length - 1]!,
+            ]) {
+              const cap = new THREE.Mesh(
+                new THREE.SphereGeometry(baseRadius * 1.2, 16, 12),
+                mat,
+              );
               cap.castShadow = true;
               cap.position.copy(end);
               strokeGroup.add(cap);
@@ -673,7 +822,11 @@ export default function Scene3D({
 
             // Back shell for full 360° double-sided volume
             if (vecsBack.length >= 2 && mode === "inflate") {
-              const curveB = new THREE.CatmullRomCurve3(vecsBack, false, "centripetal");
+              const curveB = new THREE.CatmullRomCurve3(
+                vecsBack,
+                false,
+                "centripetal",
+              );
               const tubeB = new THREE.TubeGeometry(
                 curveB,
                 Math.min(700, vecsBack.length * 3),
@@ -686,8 +839,14 @@ export default function Scene3D({
               meshB.receiveShadow = true;
               strokeGroup.add(meshB);
 
-              for (const end of [vecsBack[0]!, vecsBack[vecsBack.length - 1]!]) {
-                const cap = new THREE.Mesh(new THREE.SphereGeometry(baseRadius * 1.15, 16, 12), mat);
+              for (const end of [
+                vecsBack[0]!,
+                vecsBack[vecsBack.length - 1]!,
+              ]) {
+                const cap = new THREE.Mesh(
+                  new THREE.SphereGeometry(baseRadius * 1.15, 16, 12),
+                  mat,
+                );
                 cap.castShadow = true;
                 cap.position.copy(end);
                 strokeGroup.add(cap);
@@ -712,7 +871,11 @@ export default function Scene3D({
         const ringRadius = Math.max(45, Math.hypot(size.x, size.z) * 0.68);
 
         // Outer glow ring
-        const ringGeo = new THREE.RingGeometry(ringRadius * 0.9, ringRadius, 64);
+        const ringGeo = new THREE.RingGeometry(
+          ringRadius * 0.9,
+          ringRadius,
+          64,
+        );
         ringGeo.rotateX(-Math.PI / 2);
         const ringMat = new THREE.MeshBasicMaterial({
           color: lightA,
@@ -725,7 +888,11 @@ export default function Scene3D({
         pedestalGroup.add(ringMesh);
 
         // Inner glowing accent ring
-        const innerRingGeo = new THREE.RingGeometry(ringRadius * 0.55, ringRadius * 0.58, 48);
+        const innerRingGeo = new THREE.RingGeometry(
+          ringRadius * 0.55,
+          ringRadius * 0.58,
+          48,
+        );
         innerRingGeo.rotateX(-Math.PI / 2);
         const innerRingMat = new THREE.MeshBasicMaterial({
           color: lightB,
@@ -741,7 +908,9 @@ export default function Scene3D({
         const discGeo = new THREE.CircleGeometry(ringRadius * 0.88, 48);
         discGeo.rotateX(-Math.PI / 2);
         const discMat = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(cssColorToHex(readCssVar("--canvas-bg") || "#0b0f17")),
+          color: new THREE.Color(
+            cssColorToHex(readCssVar("--canvas-bg") || "#0b0f17"),
+          ),
           side: THREE.DoubleSide,
           transparent: true,
           opacity: 0.65,
@@ -782,7 +951,11 @@ export default function Scene3D({
       if (view === "front") {
         camera.position.set(home.center.x, home.center.y, home.center.z + d);
       } else if (view === "top") {
-        camera.position.set(home.center.x, home.center.y + d, home.center.z + 0.01);
+        camera.position.set(
+          home.center.x,
+          home.center.y + d,
+          home.center.z + 0.01,
+        );
       } else if (view === "side") {
         camera.position.set(home.center.x + d, home.center.y, home.center.z);
       } else {
@@ -795,7 +968,9 @@ export default function Scene3D({
 
     const rotateBy = (dTheta: number, dPhi: number) => {
       if (controls.autoRotate) stopAuto();
-      const offset = new THREE.Vector3().copy(camera.position).sub(controls.target);
+      const offset = new THREE.Vector3()
+        .copy(camera.position)
+        .sub(controls.target);
       const sph = new THREE.Spherical().setFromVector3(offset);
       sph.theta -= dTheta;
       sph.phi = clamp(sph.phi - dPhi, 0.15, Math.PI - 0.15);
@@ -832,7 +1007,11 @@ export default function Scene3D({
     }
 
     apiRef.current = {
-      rebuild: (nextDepth, nextMode = modeRef.current, nextMaterial = materialRef.current) => {
+      rebuild: (
+        nextDepth,
+        nextMode = modeRef.current,
+        nextMaterial = materialRef.current,
+      ) => {
         rebuild(nextDepth, nextMode, nextMaterial);
       },
       reset: goHome,
@@ -856,7 +1035,9 @@ export default function Scene3D({
       },
       exportPng: () => {
         const prev = scene.background;
-        scene.background = new THREE.Color(cssColorToHex(readCssVar("--canvas-bg") || "#0b0f17"));
+        scene.background = new THREE.Color(
+          cssColorToHex(readCssVar("--canvas-bg") || "#0b0f17"),
+        );
         renderer.render(scene, camera);
         const url = renderer.domElement.toDataURL("image/png");
         scene.background = prev;
@@ -894,11 +1075,12 @@ export default function Scene3D({
 
   useEffect(() => {
     apiRef.current?.rebuild(depth, mode, material);
-  }, [depth, mode, material, showWireframe]);
+  }, [depth, inflation, material, mode, showWireframe]);
 
   const updateMode = (nextMode: GeometryMode) => setMode(nextMode);
 
-  const updateMaterial = (nextMaterial: MaterialVariant) => setMaterial(nextMaterial);
+  const updateMaterial = (nextMaterial: MaterialVariant) =>
+    setMaterial(nextMaterial);
 
   const activeMode = mode;
   const activeMaterial = material;
@@ -916,13 +1098,16 @@ export default function Scene3D({
                 </DialogTitle>
               </div>
               <DialogDescription className="text-xs text-muted-foreground">
-                Modelagem volumétrica com reflexos de estúdio PBR · Gire com a mão aberta ✋ no ar ou arraste com o mouse
+                Modelagem volumétrica com reflexos de estúdio PBR · Gire com a
+                mão aberta ✋ no ar ou arraste com o mouse
               </DialogDescription>
             </div>
 
             {/* Camera angle presets */}
             <div className="flex items-center gap-1 rounded-lg border border-border/80 bg-panel/80 p-1">
-              <span className="px-1 text-[11px] font-medium text-muted-foreground">Câmera:</span>
+              <span className="px-1 text-[11px] font-medium text-muted-foreground">
+                Câmera:
+              </span>
               <button
                 type="button"
                 onClick={() => apiRef.current?.setView("perspective")}
@@ -1078,13 +1263,25 @@ export default function Scene3D({
           </label>
 
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="panel" size="sm" onClick={() => apiRef.current?.reset()}>
+            <Button
+              variant="panel"
+              size="sm"
+              onClick={() => apiRef.current?.reset()}
+            >
               <RotateCcw className="size-3.5" /> Recentralizar
             </Button>
-            <Button variant="panel" size="sm" onClick={() => apiRef.current?.exportPng()}>
+            <Button
+              variant="panel"
+              size="sm"
+              onClick={() => apiRef.current?.exportPng()}
+            >
               <ImageDown className="size-3.5" /> Imagem (PNG)
             </Button>
-            <Button variant="glow" size="sm" onClick={() => apiRef.current?.exportGlb()}>
+            <Button
+              variant="glow"
+              size="sm"
+              onClick={() => apiRef.current?.exportGlb()}
+            >
               <Download className="size-3.5" /> Baixar 3D (.glb)
             </Button>
           </div>

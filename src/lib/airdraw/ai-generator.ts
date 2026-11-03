@@ -42,7 +42,14 @@ function circlePoints(cx: number, cy: number, r: number, steps = 36): Point[] {
   }, steps);
 }
 
-function arcPoints(cx: number, cy: number, r: number, start: number, end: number, steps = 24): Point[] {
+function arcPoints(
+  cx: number,
+  cy: number,
+  r: number,
+  start: number,
+  end: number,
+  steps = 24,
+): Point[] {
   return sampleCurve((t) => {
     const angle = start + t * (end - start);
     return {
@@ -52,12 +59,26 @@ function arcPoints(cx: number, cy: number, r: number, start: number, end: number
   }, steps);
 }
 
-function bezierPoints(p0: Point, p1: Point, p2: Point, p3: Point, steps = 24): Point[] {
+function bezierPoints(
+  p0: Point,
+  p1: Point,
+  p2: Point,
+  p3: Point,
+  steps = 24,
+): Point[] {
   return sampleCurve((t) => {
     const mt = 1 - t;
     return {
-      x: mt * mt * mt * p0.x + 3 * mt * mt * t * p1.x + 3 * mt * t * t * p2.x + t * t * t * p3.x,
-      y: mt * mt * mt * p0.y + 3 * mt * mt * t * p1.y + 3 * mt * t * t * p2.y + t * t * t * p3.y,
+      x:
+        mt * mt * mt * p0.x +
+        3 * mt * mt * t * p1.x +
+        3 * mt * t * t * p2.x +
+        t * t * t * p3.x,
+      y:
+        mt * mt * mt * p0.y +
+        3 * mt * mt * t * p1.y +
+        3 * mt * t * t * p2.y +
+        t * t * t * p3.y,
     };
   }, steps);
 }
@@ -69,7 +90,12 @@ function generateHeartStrokes(): Stroke[] {
     const a = t * Math.PI * 2;
     // Parametric heart formula centered at (0.5, 0.48)
     const hx = 16 * Math.pow(Math.sin(a), 3);
-    const hy = -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a));
+    const hy = -(
+      13 * Math.cos(a) -
+      5 * Math.cos(2 * a) -
+      2 * Math.cos(3 * a) -
+      Math.cos(4 * a)
+    );
     return {
       x: 0.5 + (hx / 16) * 0.22,
       y: 0.48 + (hy / 16) * 0.22,
@@ -79,7 +105,12 @@ function generateHeartStrokes(): Stroke[] {
   const innerGlow = sampleCurve((t) => {
     const a = t * Math.PI * 2;
     const hx = 16 * Math.pow(Math.sin(a), 3);
-    const hy = -(13 * Math.cos(a) - 5 * Math.cos(2 * a) - 2 * Math.cos(3 * a) - Math.cos(4 * a));
+    const hy = -(
+      13 * Math.cos(a) -
+      5 * Math.cos(2 * a) -
+      2 * Math.cos(3 * a) -
+      Math.cos(4 * a)
+    );
     return {
       x: 0.5 + (hx / 16) * 0.14,
       y: 0.48 + (hy / 16) * 0.14,
@@ -87,12 +118,32 @@ function generateHeartStrokes(): Stroke[] {
   }, 36);
 
   // Left wing
-  const leftWing1 = bezierPoints({ x: 0.35, y: 0.45 }, { x: 0.2, y: 0.3 }, { x: 0.12, y: 0.4 }, { x: 0.18, y: 0.52 });
-  const leftWing2 = bezierPoints({ x: 0.32, y: 0.5 }, { x: 0.16, y: 0.42 }, { x: 0.1, y: 0.55 }, { x: 0.22, y: 0.6 });
+  const leftWing1 = bezierPoints(
+    { x: 0.35, y: 0.45 },
+    { x: 0.2, y: 0.3 },
+    { x: 0.12, y: 0.4 },
+    { x: 0.18, y: 0.52 },
+  );
+  const leftWing2 = bezierPoints(
+    { x: 0.32, y: 0.5 },
+    { x: 0.16, y: 0.42 },
+    { x: 0.1, y: 0.55 },
+    { x: 0.22, y: 0.6 },
+  );
 
   // Right wing
-  const rightWing1 = bezierPoints({ x: 0.65, y: 0.45 }, { x: 0.8, y: 0.3 }, { x: 0.88, y: 0.4 }, { x: 0.82, y: 0.52 });
-  const rightWing2 = bezierPoints({ x: 0.68, y: 0.5 }, { x: 0.84, y: 0.42 }, { x: 0.9, y: 0.55 }, { x: 0.78, y: 0.6 });
+  const rightWing1 = bezierPoints(
+    { x: 0.65, y: 0.45 },
+    { x: 0.8, y: 0.3 },
+    { x: 0.88, y: 0.4 },
+    { x: 0.82, y: 0.52 },
+  );
+  const rightWing2 = bezierPoints(
+    { x: 0.68, y: 0.5 },
+    { x: 0.84, y: 0.42 },
+    { x: 0.9, y: 0.55 },
+    { x: 0.78, y: 0.6 },
+  );
 
   return [
     createStroke(heartOutline, "#ff0077", 6),
@@ -108,25 +159,60 @@ function generateCatStrokes(): Stroke[] {
   // Head
   const head = circlePoints(0.5, 0.42, 0.18, 36);
   // Left ear
-  const leftEar = [{ x: 0.38, y: 0.3 }, { x: 0.32, y: 0.16 }, { x: 0.45, y: 0.26 }];
+  const leftEar = [
+    { x: 0.38, y: 0.3 },
+    { x: 0.32, y: 0.16 },
+    { x: 0.45, y: 0.26 },
+  ];
   // Right ear
-  const rightEar = [{ x: 0.55, y: 0.26 }, { x: 0.68, y: 0.16 }, { x: 0.62, y: 0.3 }];
+  const rightEar = [
+    { x: 0.55, y: 0.26 },
+    { x: 0.68, y: 0.16 },
+    { x: 0.62, y: 0.3 },
+  ];
   // Eyes
   const leftEye = circlePoints(0.43, 0.4, 0.03, 16);
   const rightEye = circlePoints(0.57, 0.4, 0.03, 16);
   // Nose and mouth
-  const nose = [{ x: 0.48, y: 0.46 }, { x: 0.52, y: 0.46 }, { x: 0.5, y: 0.49 }, { x: 0.48, y: 0.46 }];
+  const nose = [
+    { x: 0.48, y: 0.46 },
+    { x: 0.52, y: 0.46 },
+    { x: 0.5, y: 0.49 },
+    { x: 0.48, y: 0.46 },
+  ];
   const mouthLeft = arcPoints(0.47, 0.51, 0.03, 0, Math.PI);
   const mouthRight = arcPoints(0.53, 0.51, 0.03, 0, Math.PI);
   // Whiskers
-  const wL1 = [{ x: 0.38, y: 0.47 }, { x: 0.2, y: 0.44 }];
-  const wL2 = [{ x: 0.38, y: 0.5 }, { x: 0.18, y: 0.52 }];
-  const wR1 = [{ x: 0.62, y: 0.47 }, { x: 0.8, y: 0.44 }];
-  const wR2 = [{ x: 0.62, y: 0.5 }, { x: 0.82, y: 0.52 }];
+  const wL1 = [
+    { x: 0.38, y: 0.47 },
+    { x: 0.2, y: 0.44 },
+  ];
+  const wL2 = [
+    { x: 0.38, y: 0.5 },
+    { x: 0.18, y: 0.52 },
+  ];
+  const wR1 = [
+    { x: 0.62, y: 0.47 },
+    { x: 0.8, y: 0.44 },
+  ];
+  const wR2 = [
+    { x: 0.62, y: 0.5 },
+    { x: 0.82, y: 0.52 },
+  ];
   // Body and paws
-  const body = bezierPoints({ x: 0.38, y: 0.58 }, { x: 0.32, y: 0.78 }, { x: 0.68, y: 0.78 }, { x: 0.62, y: 0.58 });
+  const body = bezierPoints(
+    { x: 0.38, y: 0.58 },
+    { x: 0.32, y: 0.78 },
+    { x: 0.68, y: 0.78 },
+    { x: 0.62, y: 0.58 },
+  );
   // Tail
-  const tail = bezierPoints({ x: 0.65, y: 0.76 }, { x: 0.85, y: 0.75 }, { x: 0.88, y: 0.6 }, { x: 0.8, y: 0.58 });
+  const tail = bezierPoints(
+    { x: 0.65, y: 0.76 },
+    { x: 0.85, y: 0.75 },
+    { x: 0.88, y: 0.6 },
+    { x: 0.8, y: 0.58 },
+  );
 
   return [
     createStroke(head, "#00f0ff", 5),
@@ -148,21 +234,54 @@ function generateCatStrokes(): Stroke[] {
 
 function generateSwordStrokes(): Stroke[] {
   // Blade central line
-  const bladeTip = [{ x: 0.5, y: 0.12 }, { x: 0.5, y: 0.65 }];
+  const bladeTip = [
+    { x: 0.5, y: 0.12 },
+    { x: 0.5, y: 0.65 },
+  ];
   // Blade left contour
-  const bladeL = [{ x: 0.5, y: 0.12 }, { x: 0.46, y: 0.18 }, { x: 0.47, y: 0.65 }];
+  const bladeL = [
+    { x: 0.5, y: 0.12 },
+    { x: 0.46, y: 0.18 },
+    { x: 0.47, y: 0.65 },
+  ];
   // Blade right contour
-  const bladeR = [{ x: 0.5, y: 0.12 }, { x: 0.54, y: 0.18 }, { x: 0.53, y: 0.65 }];
+  const bladeR = [
+    { x: 0.5, y: 0.12 },
+    { x: 0.54, y: 0.18 },
+    { x: 0.53, y: 0.65 },
+  ];
   // Guard
-  const guard = [{ x: 0.32, y: 0.66 }, { x: 0.68, y: 0.66 }, { x: 0.65, y: 0.69 }, { x: 0.35, y: 0.69 }, { x: 0.32, y: 0.66 }];
+  const guard = [
+    { x: 0.32, y: 0.66 },
+    { x: 0.68, y: 0.66 },
+    { x: 0.65, y: 0.69 },
+    { x: 0.35, y: 0.69 },
+    { x: 0.32, y: 0.66 },
+  ];
   // Handle
-  const handleL = [{ x: 0.48, y: 0.69 }, { x: 0.48, y: 0.82 }];
-  const handleR = [{ x: 0.52, y: 0.69 }, { x: 0.52, y: 0.82 }];
+  const handleL = [
+    { x: 0.48, y: 0.69 },
+    { x: 0.48, y: 0.82 },
+  ];
+  const handleR = [
+    { x: 0.52, y: 0.69 },
+    { x: 0.52, y: 0.82 },
+  ];
   // Pommel
   const pommel = circlePoints(0.5, 0.85, 0.035, 16);
   // Energy aura runes
-  const aura1 = bezierPoints({ x: 0.42, y: 0.3 }, { x: 0.4, y: 0.4 }, { x: 0.43, y: 0.5 }, { x: 0.41, y: 0.6 });
-  const aura2 = bezierPoints({ x: 0.58, y: 0.3 }, { x: 0.6, y: 0.4 }, { x: 0.57, y: 0.5 }, { x: 0.59, y: 0.6 });
+  const aura1 = bezierPoints(
+    { x: 0.42, y: 0.3 },
+    { x: 0.4, y: 0.4 },
+    { x: 0.43, y: 0.5 },
+    { x: 0.41, y: 0.6 },
+  );
+  const aura2 = bezierPoints(
+    { x: 0.58, y: 0.3 },
+    { x: 0.6, y: 0.4 },
+    { x: 0.57, y: 0.5 },
+    { x: 0.59, y: 0.6 },
+  );
 
   return [
     createStroke(bladeTip, "#ffffff", 4),
@@ -179,17 +298,39 @@ function generateSwordStrokes(): Stroke[] {
 
 function generateFlowerStrokes(): Stroke[] {
   // Stem
-  const stem = bezierPoints({ x: 0.5, y: 0.5 }, { x: 0.52, y: 0.7 }, { x: 0.48, y: 0.85 }, { x: 0.5, y: 0.92 });
+  const stem = bezierPoints(
+    { x: 0.5, y: 0.5 },
+    { x: 0.52, y: 0.7 },
+    { x: 0.48, y: 0.85 },
+    { x: 0.5, y: 0.92 },
+  );
   // Leaves
-  const leafL = bezierPoints({ x: 0.51, y: 0.72 }, { x: 0.38, y: 0.65 }, { x: 0.32, y: 0.72 }, { x: 0.5, y: 0.76 });
-  const leafR = bezierPoints({ x: 0.49, y: 0.78 }, { x: 0.62, y: 0.72 }, { x: 0.68, y: 0.8 }, { x: 0.5, y: 0.83 });
+  const leafL = bezierPoints(
+    { x: 0.51, y: 0.72 },
+    { x: 0.38, y: 0.65 },
+    { x: 0.32, y: 0.72 },
+    { x: 0.5, y: 0.76 },
+  );
+  const leafR = bezierPoints(
+    { x: 0.49, y: 0.78 },
+    { x: 0.62, y: 0.72 },
+    { x: 0.68, y: 0.8 },
+    { x: 0.5, y: 0.83 },
+  );
 
   // Center
   const center = circlePoints(0.5, 0.38, 0.06, 24);
 
   // 6 Petals around center
   const petals: Stroke[] = [];
-  const petalColors = ["#ff0077", "#ff00aa", "#ff0077", "#ff00aa", "#ff0077", "#ff00aa"];
+  const petalColors = [
+    "#ff0077",
+    "#ff00aa",
+    "#ff0077",
+    "#ff00aa",
+    "#ff0077",
+    "#ff00aa",
+  ];
   for (let i = 0; i < 6; i++) {
     const angle = (i / 6) * Math.PI * 2;
     const px = 0.5 + Math.cos(angle) * 0.15;
@@ -209,9 +350,27 @@ function generateFlowerStrokes(): Stroke[] {
 
 function generateCarStrokes(): Stroke[] {
   // Roof, hood, trunk silhouette
-  const body = bezierPoints({ x: 0.15, y: 0.6 }, { x: 0.28, y: 0.52 }, { x: 0.42, y: 0.38 }, { x: 0.65, y: 0.38 });
-  const roofToBack = bezierPoints({ x: 0.65, y: 0.38 }, { x: 0.78, y: 0.5 }, { x: 0.88, y: 0.56 }, { x: 0.9, y: 0.62 });
-  const underbody = [{ x: 0.9, y: 0.62 }, { x: 0.82, y: 0.62 }, { x: 0.68, y: 0.62 }, { x: 0.38, y: 0.62 }, { x: 0.24, y: 0.62 }, { x: 0.15, y: 0.62 }, { x: 0.15, y: 0.6 }];
+  const body = bezierPoints(
+    { x: 0.15, y: 0.6 },
+    { x: 0.28, y: 0.52 },
+    { x: 0.42, y: 0.38 },
+    { x: 0.65, y: 0.38 },
+  );
+  const roofToBack = bezierPoints(
+    { x: 0.65, y: 0.38 },
+    { x: 0.78, y: 0.5 },
+    { x: 0.88, y: 0.56 },
+    { x: 0.9, y: 0.62 },
+  );
+  const underbody = [
+    { x: 0.9, y: 0.62 },
+    { x: 0.82, y: 0.62 },
+    { x: 0.68, y: 0.62 },
+    { x: 0.38, y: 0.62 },
+    { x: 0.24, y: 0.62 },
+    { x: 0.15, y: 0.62 },
+    { x: 0.15, y: 0.6 },
+  ];
 
   // Wheels
   const wheelFront = circlePoints(0.3, 0.62, 0.07, 24);
@@ -220,9 +379,18 @@ function generateCarStrokes(): Stroke[] {
   const rimRear = circlePoints(0.75, 0.62, 0.035, 16);
 
   // Window
-  const windowLine = bezierPoints({ x: 0.44, y: 0.41 }, { x: 0.54, y: 0.41 }, { x: 0.63, y: 0.41 }, { x: 0.72, y: 0.5 });
+  const windowLine = bezierPoints(
+    { x: 0.44, y: 0.41 },
+    { x: 0.54, y: 0.41 },
+    { x: 0.63, y: 0.41 },
+    { x: 0.72, y: 0.5 },
+  );
   // Spoiler
-  const spoiler = [{ x: 0.85, y: 0.54 }, { x: 0.92, y: 0.5 }, { x: 0.93, y: 0.53 }];
+  const spoiler = [
+    { x: 0.85, y: 0.54 },
+    { x: 0.92, y: 0.5 },
+    { x: 0.93, y: 0.53 },
+  ];
 
   return [
     createStroke(body, "#00f0ff", 5),
@@ -239,19 +407,54 @@ function generateCarStrokes(): Stroke[] {
 
 function generateButterflyStrokes(): Stroke[] {
   // Body and head
-  const body = bezierPoints({ x: 0.5, y: 0.35 }, { x: 0.5, y: 0.45 }, { x: 0.5, y: 0.6 }, { x: 0.5, y: 0.7 });
+  const body = bezierPoints(
+    { x: 0.5, y: 0.35 },
+    { x: 0.5, y: 0.45 },
+    { x: 0.5, y: 0.6 },
+    { x: 0.5, y: 0.7 },
+  );
   const head = circlePoints(0.5, 0.32, 0.025, 14);
   // Antennae
-  const antL = bezierPoints({ x: 0.49, y: 0.3 }, { x: 0.44, y: 0.22 }, { x: 0.4, y: 0.2 }, { x: 0.38, y: 0.22 });
-  const antR = bezierPoints({ x: 0.51, y: 0.3 }, { x: 0.56, y: 0.22 }, { x: 0.6, y: 0.2 }, { x: 0.62, y: 0.22 });
+  const antL = bezierPoints(
+    { x: 0.49, y: 0.3 },
+    { x: 0.44, y: 0.22 },
+    { x: 0.4, y: 0.2 },
+    { x: 0.38, y: 0.22 },
+  );
+  const antR = bezierPoints(
+    { x: 0.51, y: 0.3 },
+    { x: 0.56, y: 0.22 },
+    { x: 0.6, y: 0.2 },
+    { x: 0.62, y: 0.22 },
+  );
 
   // Upper wings
-  const wingTopL = bezierPoints({ x: 0.49, y: 0.4 }, { x: 0.3, y: 0.2 }, { x: 0.15, y: 0.32 }, { x: 0.48, y: 0.52 });
-  const wingTopR = bezierPoints({ x: 0.51, y: 0.4 }, { x: 0.7, y: 0.2 }, { x: 0.85, y: 0.32 }, { x: 0.52, y: 0.52 });
+  const wingTopL = bezierPoints(
+    { x: 0.49, y: 0.4 },
+    { x: 0.3, y: 0.2 },
+    { x: 0.15, y: 0.32 },
+    { x: 0.48, y: 0.52 },
+  );
+  const wingTopR = bezierPoints(
+    { x: 0.51, y: 0.4 },
+    { x: 0.7, y: 0.2 },
+    { x: 0.85, y: 0.32 },
+    { x: 0.52, y: 0.52 },
+  );
 
   // Lower wings
-  const wingBotL = bezierPoints({ x: 0.49, y: 0.53 }, { x: 0.22, y: 0.58 }, { x: 0.28, y: 0.75 }, { x: 0.49, y: 0.65 });
-  const wingBotR = bezierPoints({ x: 0.51, y: 0.53 }, { x: 0.78, y: 0.58 }, { x: 0.72, y: 0.75 }, { x: 0.51, y: 0.65 });
+  const wingBotL = bezierPoints(
+    { x: 0.49, y: 0.53 },
+    { x: 0.22, y: 0.58 },
+    { x: 0.28, y: 0.75 },
+    { x: 0.49, y: 0.65 },
+  );
+  const wingBotR = bezierPoints(
+    { x: 0.51, y: 0.53 },
+    { x: 0.78, y: 0.58 },
+    { x: 0.72, y: 0.75 },
+    { x: 0.51, y: 0.65 },
+  );
 
   // Wing details
   const detailL = circlePoints(0.35, 0.38, 0.04, 16);
@@ -273,20 +476,51 @@ function generateButterflyStrokes(): Stroke[] {
 
 function generateRocketStrokes(): Stroke[] {
   // Fuselage body
-  const bodyL = bezierPoints({ x: 0.5, y: 0.15 }, { x: 0.42, y: 0.35 }, { x: 0.42, y: 0.65 }, { x: 0.42, y: 0.72 });
-  const bodyR = bezierPoints({ x: 0.5, y: 0.15 }, { x: 0.58, y: 0.35 }, { x: 0.58, y: 0.65 }, { x: 0.58, y: 0.72 });
-  const base = [{ x: 0.42, y: 0.72 }, { x: 0.58, y: 0.72 }];
+  const bodyL = bezierPoints(
+    { x: 0.5, y: 0.15 },
+    { x: 0.42, y: 0.35 },
+    { x: 0.42, y: 0.65 },
+    { x: 0.42, y: 0.72 },
+  );
+  const bodyR = bezierPoints(
+    { x: 0.5, y: 0.15 },
+    { x: 0.58, y: 0.35 },
+    { x: 0.58, y: 0.65 },
+    { x: 0.58, y: 0.72 },
+  );
+  const base = [
+    { x: 0.42, y: 0.72 },
+    { x: 0.58, y: 0.72 },
+  ];
 
   // Porthole window
   const window = circlePoints(0.5, 0.42, 0.05, 20);
 
   // Fins
-  const finL = [{ x: 0.42, y: 0.58 }, { x: 0.28, y: 0.76 }, { x: 0.42, y: 0.72 }];
-  const finR = [{ x: 0.58, y: 0.58 }, { x: 0.72, y: 0.76 }, { x: 0.58, y: 0.72 }];
+  const finL = [
+    { x: 0.42, y: 0.58 },
+    { x: 0.28, y: 0.76 },
+    { x: 0.42, y: 0.72 },
+  ];
+  const finR = [
+    { x: 0.58, y: 0.58 },
+    { x: 0.72, y: 0.76 },
+    { x: 0.58, y: 0.72 },
+  ];
 
   // Exhaust flame
-  const flameOuter = bezierPoints({ x: 0.44, y: 0.72 }, { x: 0.4, y: 0.88 }, { x: 0.5, y: 0.95 }, { x: 0.56, y: 0.72 });
-  const flameInner = bezierPoints({ x: 0.47, y: 0.72 }, { x: 0.45, y: 0.84 }, { x: 0.5, y: 0.88 }, { x: 0.53, y: 0.72 });
+  const flameOuter = bezierPoints(
+    { x: 0.44, y: 0.72 },
+    { x: 0.4, y: 0.88 },
+    { x: 0.5, y: 0.95 },
+    { x: 0.56, y: 0.72 },
+  );
+  const flameInner = bezierPoints(
+    { x: 0.47, y: 0.72 },
+    { x: 0.45, y: 0.84 },
+    { x: 0.5, y: 0.88 },
+    { x: 0.53, y: 0.72 },
+  );
 
   return [
     createStroke(bodyL, "#ffffff", 5),
@@ -318,10 +552,22 @@ function generateStarStrokes(): Stroke[] {
   const orbit2 = circlePoints(cx, cy, 0.38, 40);
 
   // Sparkles
-  const sp1 = [{ x: 0.22, y: 0.22 }, { x: 0.28, y: 0.28 }];
-  const sp2 = [{ x: 0.28, y: 0.22 }, { x: 0.22, y: 0.28 }];
-  const sp3 = [{ x: 0.72, y: 0.68 }, { x: 0.78, y: 0.74 }];
-  const sp4 = [{ x: 0.78, y: 0.68 }, { x: 0.72, y: 0.74 }];
+  const sp1 = [
+    { x: 0.22, y: 0.22 },
+    { x: 0.28, y: 0.28 },
+  ];
+  const sp2 = [
+    { x: 0.28, y: 0.22 },
+    { x: 0.22, y: 0.28 },
+  ];
+  const sp3 = [
+    { x: 0.72, y: 0.68 },
+    { x: 0.78, y: 0.74 },
+  ];
+  const sp4 = [
+    { x: 0.78, y: 0.68 },
+    { x: 0.72, y: 0.74 },
+  ];
 
   return [
     createStroke(starPts, "#ffd700", 6),
@@ -336,18 +582,46 @@ function generateStarStrokes(): Stroke[] {
 
 function generateDragonStrokes(): Stroke[] {
   // S-curved serpentine body
-  const body = bezierPoints({ x: 0.2, y: 0.6 }, { x: 0.35, y: 0.25 }, { x: 0.65, y: 0.7 }, { x: 0.8, y: 0.35 });
+  const body = bezierPoints(
+    { x: 0.2, y: 0.6 },
+    { x: 0.35, y: 0.25 },
+    { x: 0.65, y: 0.7 },
+    { x: 0.8, y: 0.35 },
+  );
   // Head
-  const head = [{ x: 0.76, y: 0.38 }, { x: 0.86, y: 0.3 }, { x: 0.88, y: 0.36 }, { x: 0.82, y: 0.42 }];
+  const head = [
+    { x: 0.76, y: 0.38 },
+    { x: 0.86, y: 0.3 },
+    { x: 0.88, y: 0.36 },
+    { x: 0.82, y: 0.42 },
+  ];
   // Horns
-  const horn = [{ x: 0.82, y: 0.32 }, { x: 0.88, y: 0.2 }];
+  const horn = [
+    { x: 0.82, y: 0.32 },
+    { x: 0.88, y: 0.2 },
+  ];
   // Dragon eye
   const eye = circlePoints(0.83, 0.34, 0.015, 8);
   // Wings
-  const wingL = bezierPoints({ x: 0.5, y: 0.45 }, { x: 0.35, y: 0.2 }, { x: 0.5, y: 0.15 }, { x: 0.55, y: 0.38 });
-  const wingR = bezierPoints({ x: 0.55, y: 0.38 }, { x: 0.65, y: 0.15 }, { x: 0.75, y: 0.25 }, { x: 0.62, y: 0.45 });
+  const wingL = bezierPoints(
+    { x: 0.5, y: 0.45 },
+    { x: 0.35, y: 0.2 },
+    { x: 0.5, y: 0.15 },
+    { x: 0.55, y: 0.38 },
+  );
+  const wingR = bezierPoints(
+    { x: 0.55, y: 0.38 },
+    { x: 0.65, y: 0.15 },
+    { x: 0.75, y: 0.25 },
+    { x: 0.62, y: 0.45 },
+  );
   // Fire breath
-  const fire1 = bezierPoints({ x: 0.88, y: 0.36 }, { x: 0.94, y: 0.38 }, { x: 0.96, y: 0.46 }, { x: 0.9, y: 0.48 });
+  const fire1 = bezierPoints(
+    { x: 0.88, y: 0.36 },
+    { x: 0.94, y: 0.38 },
+    { x: 0.96, y: 0.46 },
+    { x: 0.9, y: 0.48 },
+  );
 
   return [
     createStroke(body, "#00f0ff", 6),
@@ -375,7 +649,13 @@ function generateMandalaStrokes(): Stroke[] {
     const angle = (i / 8) * Math.PI * 2;
     const px = cx + Math.cos(angle) * 0.18;
     const py = cy + Math.sin(angle) * 0.18;
-    strokes.push(createStroke(circlePoints(px, py, 0.12, 24), i % 2 === 0 ? "#ff0077" : "#00f0ff", 3));
+    strokes.push(
+      createStroke(
+        circlePoints(px, py, 0.12, 24),
+        i % 2 === 0 ? "#ff0077" : "#00f0ff",
+        3,
+      ),
+    );
   }
 
   return strokes;
@@ -383,7 +663,9 @@ function generateMandalaStrokes(): Stroke[] {
 
 // ----------------- GEMINI MULTIMODAL 2D GENERATION -----------------
 
-export async function generate2DStrokesWithGemini(prompt: string): Promise<Stroke[] | null> {
+export async function generate2DStrokesWithGemini(
+  prompt: string,
+): Promise<Stroke[] | null> {
   const key = loadGeminiKey();
   if (!key.trim()) return null;
 
@@ -442,19 +724,27 @@ Requirements:
         .replace(/\s*```\s*$/i, "")
         .trim();
 
-      const parsed = JSON.parse(cleaned);
+      const parsed = JSON.parse(cleaned) as unknown;
       if (Array.isArray(parsed) && parsed.length > 0) {
-        return parsed.map((item: any, i: number) => ({
+        return parsed.map((item: Record<string, unknown>, i: number) => ({
           id: nextId(),
-          color: String(item.color || "#00f0ff"),
-          size: Math.max(2, Math.min(12, Number(item.size || 5))),
-          points: (Array.isArray(item.points) ? item.points : []).map((pt: any, idx: number) => ({
-            x: Math.max(0.02, Math.min(0.98, Number(pt.x ?? 0.5))),
-            y: Math.max(0.02, Math.min(0.98, Number(pt.y ?? 0.5))),
-            z: 0,
-            p: 1,
-            t: idx * 16,
-          })),
+          color: String(item.color ?? "#00f0ff"),
+          size: Math.max(2, Math.min(12, Number(item.size ?? 5))),
+          points: (Array.isArray(item.points) ? item.points : []).map(
+            (pt: Record<string, unknown>, idx: number) => ({
+              x: Math.max(
+                0.02,
+                Math.min(0.98, Number((pt.x as number | undefined) ?? 0.5)),
+              ),
+              y: Math.max(
+                0.02,
+                Math.min(0.98, Number((pt.y as number | undefined) ?? 0.5)),
+              ),
+              z: 0,
+              p: 1,
+              t: idx * 16,
+            }),
+          ),
         }));
       }
     } catch {
@@ -490,33 +780,75 @@ export async function generate2DDrawing(
 
   // 2. Intelligent local vector art fallback (100% reliable, zero dependencies)
   if (/(gato|gatinho|cat|kitten|felino|miau)/i.test(query)) {
-    return { strokes: generateCatStrokes(), title: "Gatinho Neon", source: "local" };
+    return {
+      strokes: generateCatStrokes(),
+      title: "Gatinho Neon",
+      source: "local",
+    };
   }
   if (/(coracao|coração|heart|amor|love|paixao|paixão)/i.test(query)) {
-    return { strokes: generateHeartStrokes(), title: "Coração com Asas", source: "local" };
+    return {
+      strokes: generateHeartStrokes(),
+      title: "Coração com Asas",
+      source: "local",
+    };
   }
   if (/(dragao|dragão|dragon|monstro|reptil)/i.test(query)) {
-    return { strokes: generateDragonStrokes(), title: "Dragão Cyberpunk", source: "local" };
+    return {
+      strokes: generateDragonStrokes(),
+      title: "Dragão Cyberpunk",
+      source: "local",
+    };
   }
   if (/(espada|sword|lamina|lâmina|adaga|katana|sabre)/i.test(query)) {
-    return { strokes: generateSwordStrokes(), title: "Espada Futurista", source: "local" };
+    return {
+      strokes: generateSwordStrokes(),
+      title: "Espada Futurista",
+      source: "local",
+    };
   }
   if (/(flor|flower|rosa|rose|girassol|tulipa|planta|jardim)/i.test(query)) {
-    return { strokes: generateFlowerStrokes(), title: "Flor Radiante", source: "local" };
+    return {
+      strokes: generateFlowerStrokes(),
+      title: "Flor Radiante",
+      source: "local",
+    };
   }
   if (/(carro|car|automovel|automóvel|veiculo|veículo|corrida)/i.test(query)) {
-    return { strokes: generateCarStrokes(), title: "Carro Esportivo", source: "local" };
+    return {
+      strokes: generateCarStrokes(),
+      title: "Carro Esportivo",
+      source: "local",
+    };
   }
   if (/(borboleta|butterfly|mariposa)/i.test(query)) {
-    return { strokes: generateButterflyStrokes(), title: "Borboleta Neon", source: "local" };
+    return {
+      strokes: generateButterflyStrokes(),
+      title: "Borboleta Neon",
+      source: "local",
+    };
   }
   if (/(foguete|rocket|espaco|espaço|nave|astronave|cosmos)/i.test(query)) {
-    return { strokes: generateRocketStrokes(), title: "Foguete Espacial", source: "local" };
+    return {
+      strokes: generateRocketStrokes(),
+      title: "Foguete Espacial",
+      source: "local",
+    };
   }
-  if (/(estrela|star|constelacao|constelação|astro|galaxia|galáxia)/i.test(query)) {
-    return { strokes: generateStarStrokes(), title: "Estrela Cósmica", source: "local" };
+  if (
+    /(estrela|star|constelacao|constelação|astro|galaxia|galáxia)/i.test(query)
+  ) {
+    return {
+      strokes: generateStarStrokes(),
+      title: "Estrela Cósmica",
+      source: "local",
+    };
   }
 
   // Default: Mandala Geométrica
-  return { strokes: generateMandalaStrokes(), title: "Mandala Neon", source: "local" };
+  return {
+    strokes: generateMandalaStrokes(),
+    title: "Mandala Neon",
+    source: "local",
+  };
 }

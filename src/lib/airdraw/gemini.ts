@@ -387,9 +387,9 @@ Prompt do usuário: "${promptText}". Traços desenhados: ${strokeCount}.`;
         return buildFallbackGeminiSpec(prompt, strokeCount, analysis);
       }
 
-      let payload: any = null;
+      let payload: Record<string, unknown> | null = null;
       try {
-        payload = JSON.parse(text);
+        payload = JSON.parse(text) as Record<string, unknown>;
       } catch {
         return buildFallbackGeminiSpec(prompt, strokeCount, analysis);
       }

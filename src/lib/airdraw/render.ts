@@ -175,4 +175,3 @@ export function renderHands(
   }
   ctx.globalAlpha = 1;
 }
-

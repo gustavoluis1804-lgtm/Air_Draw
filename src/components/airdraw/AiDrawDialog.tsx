@@ -44,7 +44,9 @@ export function AiDrawDialog({
   hasExistingStrokes,
 }: Props) {
   const [prompt, setPrompt] = useState("");
-  const [generationMode, setGenerationMode] = useState<"replace" | "add">("add");
+  const [generationMode, setGenerationMode] = useState<"replace" | "add">(
+    "add",
+  );
   const [geminiKey, setGeminiKey] = useState(loadGeminiKey);
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -52,7 +54,9 @@ export function AiDrawDialog({
   const handleGenerate = async (customPrompt?: string) => {
     const text = (customPrompt ?? prompt).trim();
     if (!text) {
-      toast("Digite o que você quer que a IA desenhe ou clique em uma sugestão abaixo!");
+      toast(
+        "Digite o que você quer que a IA desenhe ou clique em uma sugestão abaixo!",
+      );
       return;
     }
 
@@ -92,13 +96,16 @@ export function AiDrawDialog({
               <Sparkles className="size-4 text-glow" />
               Gerar Desenho com IA (2D)
             </DialogTitle>
-            <Badge variant="outline" className="border-glow/40 bg-glow/10 text-glow">
+            <Badge
+              variant="outline"
+              className="border-glow/40 bg-glow/10 text-glow"
+            >
               2D Canvas
             </Badge>
           </div>
           <DialogDescription className="text-xs text-muted-foreground">
-            Descreva o que deseja desenhar e a IA criará os traços diretamente na sua tela! Você
-            pode continuar desenhando com as mãos ou mouse.
+            Descreva o que deseja desenhar e a IA criará os traços diretamente
+            na sua tela! Você pode continuar desenhando com as mãos ou mouse.
           </DialogDescription>
         </DialogHeader>
 
@@ -122,7 +129,9 @@ export function AiDrawDialog({
 
           {/* Quick inspiration chips */}
           <div className="flex flex-col gap-1.5">
-            <span className="text-[11px] font-medium text-muted-foreground">Sugestões rápidas:</span>
+            <span className="text-[11px] font-medium text-muted-foreground">
+              Sugestões rápidas:
+            </span>
             <div className="flex flex-wrap gap-1.5">
               {PROMPT_SUGGESTIONS.map((s) => (
                 <button
@@ -181,7 +190,11 @@ export function AiDrawDialog({
               className="flex items-center gap-1.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
             >
               <KeyRound className="size-3 text-glow" />
-              <span>{geminiKey ? "Chave Gemini configurada 🟢" : "Configurar Chave Gemini (opcional)"}</span>
+              <span>
+                {geminiKey
+                  ? "Chave Gemini configurada 🟢"
+                  : "Configurar Chave Gemini (opcional)"}
+              </span>
             </button>
             {showKeyInput && (
               <div className="mt-2 flex items-center gap-2 rounded-lg border border-border/70 bg-panel/90 p-2.5 text-xs">
@@ -211,7 +224,11 @@ export function AiDrawDialog({
 
           {/* Action buttons */}
           <div className="mt-2 flex items-center justify-end gap-2">
-            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
             </Button>
             <Button

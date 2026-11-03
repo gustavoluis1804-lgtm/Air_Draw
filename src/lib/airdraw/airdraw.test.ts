@@ -205,8 +205,18 @@ describe("DrawingEngine history", () => {
     expect(e.strokes).toHaveLength(1);
 
     const generated = [
-      { id: "gen1", color: "#00f0ff", size: 4, points: [{ x: 0.2, y: 0.2, z: 0, p: 1 }] },
-      { id: "gen2", color: "#ff0055", size: 4, points: [{ x: 0.4, y: 0.4, z: 0, p: 1 }] },
+      {
+        id: "gen1",
+        color: "#00f0ff",
+        size: 4,
+        points: [{ x: 0.2, y: 0.2, z: 0, p: 1 }],
+      },
+      {
+        id: "gen2",
+        color: "#ff0055",
+        size: 4,
+        points: [{ x: 0.4, y: 0.4, z: 0, p: 1 }],
+      },
     ];
     e.addStrokes(generated);
     expect(e.strokes).toHaveLength(3);
@@ -224,7 +234,12 @@ describe("DrawingEngine history", () => {
     expect(e.strokes).toHaveLength(1);
 
     const replacement = [
-      { id: "rep1", color: "#ffd700", size: 6, points: [{ x: 0.5, y: 0.5, z: 0, p: 1 }] },
+      {
+        id: "rep1",
+        color: "#ffd700",
+        size: 6,
+        points: [{ x: 0.5, y: 0.5, z: 0, p: 1 }],
+      },
     ];
     e.replaceStrokes(replacement);
     expect(e.strokes).toHaveLength(1);
